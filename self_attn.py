@@ -3,12 +3,6 @@ from keras import backend as K
 from keras.engine import Layer
 from keras.layers import Activation
 
-def dot_product(x, kernel):
-    if K.backend() == 'tensorflow':
-        return K.squeeze(K.dot(x, K.expand_dims(kernel)), axis=-1)
-    else:
-        return K.dot(x, kernel)
-
 class SelfAttention(Layer):
     def __init__(self, **kwargs):
         super(SelfAttention, self).__init__(**kwargs)
@@ -26,9 +20,9 @@ class SelfAttention(Layer):
         super(SelfAttention, self).build(input_shape)
 
     def call(self, x, mask=None):
-        q = dot_product(x, self.W_q)
-        k = dot_product(x, self.W_k)
-        v = dot_product(x, self.W_v)
+        q = K.dot(x, self.W_q)
+        k = K.dot(x, self.W_k)
+        v = K.dot(x, self.W_v)
 
         temper = tf.sqrt(tf.cast(tf.shape(k)[-1], dtype='float32'))
         attn = K.batch_dot(q, k, axes=[2, 2]) / temper
@@ -39,7 +33,7 @@ class SelfAttention(Layer):
         return [output, attn_weight]
 
     def compute_output_shape(self, input_shape):
-        return [(input_shape[0], input_shape[2]), input_shape[1]]
+        return [(input_shape[0], input_shape[2]), (input_shape[0], input_shape[1])]
 
     def get_config(self):
         base_config = super(SelfAttention, self).get_config()
