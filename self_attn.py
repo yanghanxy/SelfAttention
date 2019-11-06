@@ -27,10 +27,10 @@ class SelfAttention(Layer):
 
         temper = tf.sqrt(tf.cast(tf.shape(k)[-1], dtype='float32'))
         attn = K.batch_dot(q, k, axes=[2, 2]) / temper
-        attn = Activation('softmax')(attn)
         if mask is not None:
             mmask = (-1e+9) * (1. - K.cast(attn, 'float32'))
             attn = Add()([attn, mmask])
+        attn = Activation('softmax')(attn)
         attn_weight = K.sum(attn, axis=1)
         output = K.batch_dot(attn, v)
         output = K.sum(output, axis=1)
