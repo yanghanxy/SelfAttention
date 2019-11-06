@@ -1,2 +1,2 @@
 # SelfAttention
-Transformer version Self-Attention (qkv) in Keras
+Transformer version Self-Attention (q, k, v) in Keras
