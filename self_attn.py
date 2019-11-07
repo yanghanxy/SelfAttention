@@ -21,6 +21,13 @@ class SelfAttention(Layer):
         super(SelfAttention, self).build(input_shape)
 
     def call(self, inputs, mask=None):
+        if mask is not None:
+            mask = K.cast(mask, K.floatx())
+            input_shape = K.int_shape(inputs)
+            broadcast_shape = [-1, input_shape[1], 1]
+            mask = K.reshape(mask, broadcast_shape)
+            inputs *= mask
+
         q = K.dot(inputs, self.W_q)
         k = K.dot(inputs, self.W_k)
         v = K.dot(inputs, self.W_v)
@@ -28,12 +35,13 @@ class SelfAttention(Layer):
         temper = tf.sqrt(tf.cast(tf.shape(k)[-1], dtype='float32'))
         attn = K.batch_dot(q, k, axes=[2, 2]) / temper
         if mask is not None:
-            mmask = (-1e+9) * (1. - K.cast(attn, 'float32'))
-            attn = Add()([attn, mmask])
-        attn = Activation('softmax')(attn)
-        attn_weight = K.sum(attn, axis=1)
+            attn *= mask
+        attn = K.softmax(attn)
+        attn_weight = K.mean(attn, axis=1)
         output = K.batch_dot(attn, v)
-        output = K.sum(output, axis=1)
+        if mask is not None:
+            output *= mask
+        output = K.mean(output, axis=1)
         return [output, attn_weight]
 
     def compute_mask(self, inputs, mask=None):
