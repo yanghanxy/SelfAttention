@@ -3,21 +3,7 @@ from keras import backend as K
 from keras.engine import Layer
 from keras.layers import Activation
 
-class SelfAttention(Layer):
-    def __init__(self, **kwargs):
-        self.supports_masking = True
-        super(SelfAttention, self).__init__(**kwargs)
 
-    def build(self, input_shape):
-        self.W_q = self.add_weight((input_shape[-1], input_shape[-1]),
-                                 initializer='glorot_uniform', trainable=True,
-                                 name='{}_W_q'.format(self.name))
-        self.W_k = self.add_weight((input_shape[-1], input_shape[-1]),
-                                 initializer='glorot_uniform', trainable=True,
-                                 name='{}_W_k'.format(self.name))
-        self.W_v = self.add_weight((input_shape[-1], input_shape[-1]),
-                                 initializer='glorot_uniform', trainable=True,
-                                 name='{}_W_c'.format(self.name))
 class SelfAttention(Layer):
     def __init__(self, **kwargs):
         self.supports_masking = True
