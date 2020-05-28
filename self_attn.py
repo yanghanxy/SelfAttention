@@ -18,7 +18,7 @@ class SelfAttention(Layer):
                                    name='{}_W_k'.format(self.name))
         self.W_v = self.add_weight(shape=(input_shape[-1], input_shape[-1]),
                                    initializer='glorot_uniform', trainable=True,
-                                   name='{}_W_c'.format(self.name))
+                                   name='{}_W_v'.format(self.name))
         super(SelfAttention, self).build(input_shape)
 
     def call(self, inputs, mask=None):
@@ -56,4 +56,3 @@ class SelfAttention(Layer):
     def get_config(self):
         base_config = super(SelfAttention, self).get_config()
         return base_config
-
